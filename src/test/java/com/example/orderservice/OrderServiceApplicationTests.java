@@ -10,6 +10,8 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
 import org.springframework.context.annotation.Import;
 import org.testcontainers.containers.PostgreSQLContainer;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
 @Import(TestcontainersConfiguration.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class OrderServiceApplicationTests {
@@ -41,14 +43,26 @@ class OrderServiceApplicationTests {
                 }
                 """;
 
-        RestAssured.given()
+//        RestAssured.given()
+//                .contentType("application/json")
+//                .body(requestBody)
+//                .when()
+//                .post("/api/orders")
+//                .then()
+//                .statusCode(201)
+//                .body(Matchers.equalTo("order placed successfully"));
+
+        String response = RestAssured.given()
                 .contentType("application/json")
                 .body(requestBody)
                 .when()
                 .post("/api/orders")
                 .then()
+                .log().all()
                 .statusCode(201)
-                .body(Matchers.equalTo("order placed successfully"));
+                .extract().body().asString();
+
+        assertThat(response).isEqualTo("order placed successfully");
 
     }
 }
